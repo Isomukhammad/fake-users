@@ -1,6 +1,6 @@
 import { CSVLink } from "react-csv";
 
-import { ChangeEvent, Dispatch, JSX, useState } from "react";
+import { ChangeEvent, Dispatch, JSX } from "react";
 
 import { FAKER_ACTIONS, IFakerActions, IFakerState } from "../reducer.ts";
 import RandomIcon from "./RandomIcon.tsx";
@@ -11,8 +11,6 @@ interface HeaderProps {
 }
 
 const Header = ({ state, dispatch }: HeaderProps): JSX.Element => {
-  const [errors, setErrors] = useState<number>(0);
-
   const setSeed = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>): void => {
@@ -37,7 +35,9 @@ const Header = ({ state, dispatch }: HeaderProps): JSX.Element => {
     if (value.startsWith("0") && value !== "0") {
       newValue = +value.slice(1);
     }
-    +value >= 0 && +value <= 1000 && setErrors(newValue);
+    +value >= 0 &&
+      +value <= 1000 &&
+      dispatch({ type: FAKER_ACTIONS.SET_ERRORS, payload: newValue });
   };
 
   return (
@@ -67,15 +67,17 @@ const Header = ({ state, dispatch }: HeaderProps): JSX.Element => {
             type="range"
             min={0}
             max={10}
-            value={errors}
+            step={0.25}
+            value={state.errors}
             onChange={serErrorRange}
-            className={"w-24"}
+            className={"w-56"}
           />
           <input
             type="number"
             min={0}
             max={1000}
-            value={errors}
+            value={state.errors}
+            step={0.25}
             onChange={serErrorRange}
             className={"rounded-md border-2 border-neutral-300 px-1 py-1.5"}
           />
